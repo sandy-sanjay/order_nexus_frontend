@@ -12,4 +12,11 @@ code {
     monospace;
 }
 
+.main-content {
+  margin-left: 240px;   /* same width as sidebar */
+  padding: 24px;
+  min-height: 100vh;
+}
+
+
 

@@ -1,36 +1,44 @@
 import { useEffect, useState } from "react";
-import api from "../../api/axiosConfig";
 import "../../styles/Products.css";
+import productApi from "../../api/productApi";
+
+
 
 function Products() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
 
-  // Add product
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
 
-  // Stock modal
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [stockQty, setStockQty] = useState("");
 
+  // 🔹 Load products
   const loadProducts = () => {
-    api.get("http://localhost:8082/api/products")
-      .then(res => setProducts(res.data));
+    productApi
+      .getAll()
+      .then(res => setProducts(res.data))
+      .catch(err => {
+        console.error(err);
+        setProducts([]);
+      });
   };
 
   useEffect(() => {
     loadProducts();
   }, []);
 
+  // 🔹 Add product
   const addProduct = (e) => {
     e.preventDefault();
-    api.post("http://localhost:8082/api/products", {
+
+    productApi.create({
       name,
       price: Number(price),
-      quantity: Number(quantity)
+      quantity: Number(quantity),
     }).then(() => {
       setName("");
       setPrice("");
@@ -39,46 +47,60 @@ function Products() {
     });
   };
 
+  // 🔹 Delete product
   const deleteProduct = (id) => {
-    if (!window.confirm("Delete this product?")) return;
-    api.delete(`http://localhost:8082/api/products/${id}`)
-      .then(() => loadProducts());
+    if (!window.confirm("Delete product?")) return;
+    productApi.remove(id).then(() => loadProducts());
   };
 
-  const openStockModal = (product) => {
-    setSelectedProduct(product);
-    setStockQty("");
-    setShowModal(true);
-  };
-
+  // 🔹 SAVE STOCK (🔥 MAIN FIX)
   const saveStock = () => {
-    api.put(`http://localhost:8082/api/products/${selectedProduct.id}`, {
-      quantity: Number(stockQty)
-    }).then(() => {
-      setShowModal(false);
-      setSelectedProduct(null);
-      setStockQty("");
-      loadProducts();
-    });
+    console.log("TOKEN:", localStorage.getItem("token"));
+
+
+    if (!selectedProduct) {
+      alert("No product selected");
+      return;
+    }
+
+    if (!stockQty || Number(stockQty) <= 0) {
+      alert("Enter valid stock quantity");
+      return;
+    }
+
+    productApi
+      .updateStock(selectedProduct.id, Number(stockQty))
+      .then(() => {
+        setShowModal(false);
+        setSelectedProduct(null);
+        setStockQty("");
+        loadProducts(); // 🔥 REQUIRED
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Stock update failed");
+      });
   };
 
   const filtered = products.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  console.log("🔄 Products render | showModal =", showModal, "selectedProduct =", selectedProduct);
+
+
   return (
     <div className="products-page">
 
-      {/* 🔹 PAGE TITLE */}
-      {/* <h1 className="page-title">Products</h1> */}
+      <h1 className="page-title">Products</h1>
 
-      {/* 🔹 ADD PRODUCT */}
+      {/* ADD PRODUCT */}
       <div className="add-product-card">
         <h2>Add Product</h2>
 
         <form className="add-product-form" onSubmit={addProduct}>
           <input
-            placeholder="Product Name"
+            placeholder="Name"
             value={name}
             onChange={e => setName(e.target.value)}
             required
@@ -94,25 +116,25 @@ function Products() {
 
           <input
             type="number"
-            placeholder="Quantity"
+            placeholder="Qty"
             value={quantity}
             onChange={e => setQuantity(e.target.value)}
             required
           />
 
-          <button type="submit">Add</button>
+          <button>Add</button>
         </form>
       </div>
 
-      {/* 🔹 SEARCH */}
+      {/* SEARCH */}
       <input
         className="search-box"
-        placeholder="Search products..."
+        placeholder="Search..."
         value={search}
         onChange={e => setSearch(e.target.value)}
       />
 
-      {/* 🔹 TABLE */}
+      {/* TABLE */}
       <table className="product-table">
         <thead>
           <tr>
@@ -123,19 +145,35 @@ function Products() {
             <th>Action</th>
           </tr>
         </thead>
-
         <tbody>
           {filtered.map(p => (
             <tr key={p.id}>
-              <td className="center">{p.id}</td>
+              <td>{p.id}</td>
               <td>{p.name}</td>
-              <td className="center">₹ {p.price}</td>
-              <td className="center">{p.quantity}</td>
-              <td className="center action-cell">
-                <button className="edit" onClick={() => openStockModal(p)}>
+              <td>₹ {p.price}</td>
+              <td>{p.quantity}</td>
+              <td>
+              <button
+                  type="button"
+                  className="edit"
+                  onClick={() => {
+                    console.log("✅ Add Stock button CLICKED", p);
+
+                    // 🔥 defer modal open to avoid race condition
+                    Promise.resolve().then(() => {
+                      setSelectedProduct(p);
+                      setStockQty("");
+                      setShowModal(true);
+                    });
+                  }}
+                >
                   Add Stock
                 </button>
-                <button className="delete" onClick={() => deleteProduct(p.id)}>
+
+                <button
+                  className="delete"
+                  onClick={() => deleteProduct(p.id)}
+                >
                   Delete
                 </button>
               </td>
@@ -144,25 +182,40 @@ function Products() {
         </tbody>
       </table>
 
-      {/* 🔹 STOCK MODAL */}
+      {/* MODAL */}
       {showModal && (
-        <div className="modal">
-          <div className="modal-box">
-            <h3>Add Stock</h3>
-            <p><b>{selectedProduct?.name}</b></p>
+  <div className="custom-modal">
+    <div className="custom-modal-box">
+      <h3>Add Stock</h3>
 
-            <input
-              type="number"
-              placeholder="Enter quantity"
-              value={stockQty}
-              onChange={e => setStockQty(e.target.value)}
-            />
+      <input
+        type="number"
+        placeholder="Enter quantity"
+        value={stockQty}
+        onChange={e => setStockQty(e.target.value)}
+        autoFocus
+      />
 
-            <button onClick={saveStock}>Save</button>
-            <button onClick={() => setShowModal(false)}>Cancel</button>
-          </div>
-        </div>
-      )}
+      <div className="modal-actions">
+        <button
+          type="button"
+          className="cancel-btn"
+          onClick={() => setShowModal(false)}
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          className="save-btn"
+          onClick={saveStock}
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
     </div>
   );

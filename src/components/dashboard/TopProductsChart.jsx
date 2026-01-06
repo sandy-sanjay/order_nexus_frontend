@@ -1,7 +1,6 @@
 import { Bar } from "react-chartjs-2";
 import { useEffect, useState } from "react";
-import api from "../../api/axiosConfig";
-
+import orderApi from "../../api/OrderApi";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,7 +22,7 @@ function TopProductsChart() {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
-    api.get("http://localhost:8083/api/orders/top-products")
+    orderApi.topProducts()
       .then(res => {
         const labels = res.data.map(p => `Product ${p.productId}`);
         const values = res.data.map(p => p.soldQty);

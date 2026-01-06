@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
-import api from "../../api/axiosConfig";
-import DashboardCard from "../../components/common_temp/DashboardCard";
-import { FaShoppingCart, FaBox, FaBell, FaRupeeSign } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { FaShoppingCart, FaBox, FaBell, FaRupeeSign } from "react-icons/fa";
+
+import DashboardCard from "../../components/common_temp/DashboardCard";
 import TopProductsChart from "../../components/dashboard/TopProductsChart";
+
+import orderApi from "../../api/OrderApi";
+import productApi from "../../api/productApi";
+import notificationsApi from "../../api/notificationsApi";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -15,29 +19,40 @@ function Dashboard() {
 
   useEffect(() => {
     const loadOrders = () => {
-      api.get("http://localhost:8083/api/orders")
-        .then(res => setOrderCount(res.data.length))
+      orderApi
+        .getAll()
+        .then((res) => setOrderCount(res.data.length))
         .catch(() => setOrderCount(0));
     };
 
     const loadProducts = () => {
-      api.get("http://localhost:8082/api/products")
-        .then(res => setProductCount(res.data.length))
+      productApi
+        .getAll()
+        .then((res) => setProductCount(res.data.length))
         .catch(() => setProductCount(0));
     };
 
     const loadRevenue = () => {
-      api.get("http://localhost:8083/api/orders/revenue")
-        .then(res => setRevenue(res.data))
+      orderApi
+        .revenue()
+        .then((res) => setRevenue(res.data))
         .catch(() => setRevenue(0));
     };
 
     const loadNotifications = () => {
-      api.get("http://localhost:8085/api/notifications")
-        .then(res => setNotificationCount(res.data.length))
+      notificationsApi
+        .getAll()
+        .then((res) => setNotificationCount(res.data.length))
         .catch(() => setNotificationCount(0));
     };
 
+    // Initial load
+    loadOrders();
+    loadProducts();
+    loadRevenue();
+    loadNotifications();
+
+    // Event listeners
     const dashboardListener = () => {
       loadOrders();
       loadRevenue();
@@ -46,11 +61,6 @@ function Dashboard() {
     const notificationListener = () => {
       loadNotifications();
     };
-
-    loadOrders();
-    loadProducts();
-    loadRevenue();
-    loadNotifications();
 
     window.addEventListener("refreshDashboard", dashboardListener);
     window.addEventListener("refreshNotifications", notificationListener);
@@ -63,7 +73,7 @@ function Dashboard() {
 
   return (
     <>
-      {/* 🔹 SPACE ONLY BELOW NAVBAR */}
+      {/* 🔹 TOP CARDS */}
       <div className="dashboard-top-section">
         <div className="dashboard-grid">
           <DashboardCard
@@ -100,7 +110,7 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* 🔹 CHART SECTION (UNCHANGED POSITION) */}
+      {/* 🔹 CHART */}
       <div className="dashboard-chart-section">
         <TopProductsChart />
       </div>

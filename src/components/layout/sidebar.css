@@ -2,7 +2,13 @@
 
 .sidebar {
   width: 240px;
-  min-height: 100vh;
+
+  /* ✅ NEW (FIXES SCROLL ISSUE) */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+
   background: linear-gradient(180deg, #1f1f1f, #141414);
   color: #ffffff;
 
@@ -11,29 +17,27 @@
 
   display: flex;
   flex-direction: column;
+
+  /* ✅ NEW (safe if menu grows) */
+  overflow-y: auto;
 }
 
 /* Brand */
 .sidebar h2 {
   font-family: 'Poppins', sans-serif;
-
-  font-size: 28px;          /* ✅ SMALL ENOUGH TO FIT */
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: 0.4px;
 
   margin-bottom: 48px;
-  padding-left: 6px;        /* reduced padding */
+  padding-left: 6px;
 
-  white-space: nowrap;      /* keep one line */
-  
+  white-space: nowrap;
+
   background: linear-gradient(90deg, #ffffff, #4db8ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
-
-
-
 
 /* Menu list */
 .sidebar ul {
@@ -43,7 +47,7 @@
 
   display: flex;
   flex-direction: column;
-  gap: 10px; /* spacing between items */
+  gap: 10px;
 }
 
 /* Each menu row */
@@ -75,10 +79,10 @@
   transform: translateX(4px);
 }
 
-/* Notification badge (your inline span enhanced) */
+/* Notification badge */
 .sidebar a span {
   background: #ef4444;
-  color: #fff;
+  color: #ffffff;
 
   min-width: 22px;
   height: 22px;
@@ -92,16 +96,9 @@
   font-weight: 600;
 }
 
-/* Logout at bottom */
-.sidebar ul li:last-child {
-  margin-top: auto;
-}
-
-.sidebar ul li:last-child a {
-  color: #f87171;
-}
-
-.sidebar ul li:last-child a:hover {
-  background: rgba(248, 113, 113, 0.15);
-  color: #fca5a5;
+/* Active menu */
+.sidebar a.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-left: 4px solid #4db8ff;
 }

@@ -1,75 +1,50 @@
-import { useState, useEffect } from "react";
-import api from "../../api/axiosConfig";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/CreateOrder.css";
+import productApi from "../../api/productApi";
+import orderApi from "../../api/OrderApi";
 
 function CreateOrder() {
-
-  // ✅ Product image mapping
-  const productImages = {
-    iphone: "/images/mobile.jpg",
-    mobile: "/images/mobile.jpg",
-    laptop: "/images/laptop.jpg",
-    tablet: "/images/tablet.jpg",
-  };
-
-  // ✅ Safe image resolver
-  const getProductImage = (name) => {
-    if (!name) return "/images/default.png";
-    const key = name.toLowerCase().trim();
-    return productImages[key] || "/images/default.png";
-  };
-
   const [products, setProducts] = useState([]);
   const [productId, setProductId] = useState(null);
   const [quantity, setQuantity] = useState("");
-  const [result, setResult] = useState(null);
-
   const navigate = useNavigate();
 
-  // 🔄 Load products
+  // 🔹 Product name → image mapping
+  const productImages = {
+    Mobile: "/images/mobile.jpg",
+    Laptop: "/images/laptop.jpg",
+    Tablet: "/images/tablet.jpg",
+  };
+
   useEffect(() => {
-    api.get("http://localhost:8082/api/products")
-      .then(res => setProducts(res.data))
-      .catch(err => console.log(err));
+    productApi.getAll().then(res => setProducts(res.data));
   }, []);
 
-  // 🛒 Place order
   const placeOrder = (e) => {
     e.preventDefault();
 
-    if (!productId) {
-      alert("Please select a product");
-      return;
-    }
-
-    const orderData = {
+    orderApi.create({
       productId: Number(productId),
-      quantity: Number(quantity)
-    };
-
-    api.post("http://localhost:8083/api/orders", orderData)
-      .then(res => {
-        const order = res.data;
-        setResult(order);
-
-        navigate("/payments", {
-          state: {
-            orderId: order.id,
-            amount: order.price
-          }
-        });
-      })
-      .catch(() => setResult({ error: "Order failed" }));
+      quantity: Number(quantity),
+    }).then(res => {
+      navigate("/payments", {
+        state: {
+          orderId: res.data.id,
+          amount: res.data.price,
+        },
+      });
+    });
   };
 
   return (
     <div className="order-container">
       <div className="order-card">
-        <h2>Create Order</h2>
-        <p className="subtitle">Select a product and place your order</p>
 
-        {/* 🧱 PRODUCT GRID */}
+        <h2>Create Order</h2>
+        <p className="subtitle">Select a product and quantity</p>
+
+        {/* PRODUCT GRID */}
         <div className="product-grid">
           {products.map(p => (
             <div
@@ -77,49 +52,36 @@ function CreateOrder() {
               className={`product-card ${productId === p.id ? "active" : ""}`}
               onClick={() => setProductId(p.id)}
             >
+              {/* ✅ IMAGE ADDED */}
               <img
-                src={getProductImage(p.name)}
+                src={productImages[p.name] || "/images/default.jpg"}
                 alt={p.name}
               />
+
               <h4>{p.name}</h4>
               <p className="price">₹ {p.price}</p>
             </div>
           ))}
         </div>
 
-        {/* 📝 ORDER FORM */}
+        {/* FORM */}
         <form onSubmit={placeOrder}>
           <div className="form-group">
             <label>Quantity</label>
             <input
               type="number"
-              min="1"
               placeholder="Enter quantity"
               value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
+              onChange={e => setQuantity(e.target.value)}
               required
             />
           </div>
 
-          <button type="submit" className="btn-primary">
+          <button className="btn-primary" disabled={!productId}>
             Place Order
           </button>
         </form>
 
-        {/* ✅ SUCCESS */}
-        {result?.id && (
-          <div className="success-box">
-            ✅ Order placed successfully <br />
-            Order ID: <b>{result.id}</b>
-          </div>
-        )}
-
-        {/* ❌ ERROR */}
-        {result?.error && (
-          <div className="error-box">
-            ❌ {result.error}
-          </div>
-        )}
       </div>
     </div>
   );

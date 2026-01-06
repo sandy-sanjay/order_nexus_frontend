@@ -1,19 +1,33 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import authApi from "../../api/authApi";
 import "./Login.css";
 
 function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    console.log("LOGIN CLICKED");
 
-    if (email === "san@gmail.com" && password === "san123") {
-      localStorage.setItem("auth", "true");
+    try {
+      const res = await authApi.login({
+        username,
+        password,
+      });
+
+      console.log("LOGIN SUCCESS", res.data);
+
+      // ✅ SAVE AUTH STATE (THIS IS CRITICAL)
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.role);
+
+      // ✅ REDIRECT
       navigate("/dashboard");
-    } else {
+    } catch (err) {
+      console.error("LOGIN FAILED", err);
       alert("Invalid credentials");
     }
   };
@@ -25,17 +39,23 @@ function Login() {
 
         <form onSubmit={handleLogin}>
           <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="username"
+            required
           />
 
           <input
             type="password"
+            name="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            required
           />
 
           <button type="submit">Login</button>

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashboardLayout from "./components/layout/DashboardLayout";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 import Dashboard from "./pages/dashboard/Dashboard";
 import Products from "./pages/products/Products";
@@ -13,10 +14,17 @@ function App() {
     <BrowserRouter>
       <Routes>
 
+        {/* PUBLIC ROUTE */}
         <Route path="/" element={<Login />} />
 
-        {/* ✅ DASHBOARD LAYOUT (ONE TIME) */}
-        <Route element={<DashboardLayout />}>
+        {/* 🔐 PROTECTED DASHBOARD ROUTES */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/products" element={<Products />} />
           <Route path="/orders" element={<CreateOrder />} />

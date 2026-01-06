@@ -1,15 +1,17 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "../../api/axiosConfig";
 import "./sidebar.css";
+import notificationApi from "../../api/notificationsApi";
+
 function Sidebar() {
 
   const [unreadCount, setUnreadCount] = useState(0);
+  const role = localStorage.getItem("role"); // ADMIN or USER
 
   const fetchUnreadCount = () => {
-    api.get("http://localhost:8085/api/notifications/unread-count")
+    notificationApi.unreadCount()
       .then(res => setUnreadCount(res.data))
-      .catch(() => {});
+      .catch(() => setUnreadCount(0));
   };
 
   useEffect(() => {
@@ -28,11 +30,28 @@ function Sidebar() {
       <h2>Order Nexus</h2>
 
       <ul>
-        <li><Link to="/dashboard">Dashboard</Link></li>
-        <li><Link to="/products">Products</Link></li>
-        <li><Link to="/orders">Orders</Link></li>
-        <li><Link to="/payments">Payments</Link></li>
 
+        {/* ================= ADMIN MENU ================= */}
+        {role === "ADMIN" && (
+          <>
+            <li><Link to="/dashboard">Dashboard</Link></li>
+            <li><Link to="/products">Products</Link></li>
+            <li><Link to="/orders">Orders</Link></li>
+            <li><Link to="/payments">Payments</Link></li>
+           
+          </>
+        )}
+
+        {/* ================= USER MENU ================= */}
+        {role === "USER" && (
+          <>
+            <li><Link to="/products">Products</Link></li>
+            <li><Link to="/my-orders">My Orders</Link></li>
+            <li><Link to="/payments">Payments</Link></li>
+          </>
+        )}
+
+        {/* ================= COMMON ================= */}
         <li>
           <Link to="/notifications">
             Notifications
@@ -51,7 +70,9 @@ function Sidebar() {
           </Link>
         </li>
 
-        <li><Link to="/">Logout</Link></li>
+        {/* Optional Logout */}
+        {/* <li><Link to="/logout">Logout</Link></li> */}
+
       </ul>
     </div>
   );

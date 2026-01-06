@@ -1,142 +1,85 @@
 import { useEffect, useState } from "react";
-import api from "../api/axiosConfig";
-
+import notificationsApi from "../api/notificationsApi";
+import "../styles/Notifications.css";
 
 function NotificationsPage() {
   const [list, setList] = useState([]);
 
-  const loadNotifications = () => {
-    api
-      .get("http://localhost:8085/api/notifications")
-      .then((res) => setList(res.data))
-      .catch((err) => console.error(err));
+  const load = () => {
+    notificationsApi
+      .getAll()
+      .then(res => setList(res.data));
   };
 
   useEffect(() => {
-    loadNotifications();
+    load();
   }, []);
 
-  // 🔹 AUTO MARK READ
-  const markRead = (notification) => {
-    if (!notification.readStatus) {
-      api
-        .put(
-          `http://localhost:8085/api/notifications/read/${notification.id}`
-        )
-        .then(() => {
-          loadNotifications();
-          window.dispatchEvent(new Event("refreshNotifications"));
-        });
-    }
-  };
+  const markRead = (id) => {
+  notificationsApi.markRead(id).then(() => {
+    load();
 
-  const deleteNotification = (id) => {
-    api
-      .delete(`http://localhost:8085/api/notifications/${id}`)
-      .then(() => {
-        loadNotifications();
-        window.dispatchEvent(new Event("refreshNotifications"));
-      });
-  };
+    // 🔥 TELL SIDEBAR TO REFRESH
+    window.dispatchEvent(new Event("refreshNotifications"));
+  });
+};
 
-        const thStyle = {
-        padding: "12px",
-        borderBottom: "2px solid #dee2e6",
-        color: "#555"
-      };
+ const remove = (id) => {
+  notificationsApi.remove(id).then(() => {
+    load();
 
-      const tdStyle = {
-        padding: "12px",
-        borderBottom: "1px solid #eee"
-      };
-
+    // 🔥 ALSO REFRESH SIDEBAR
+    window.dispatchEvent(new Event("refreshNotifications"));
+  });
+};
 
   return (
-  <div
-    style={{
-      padding: "30px",
-      background: "#f4f6f8",
-      minHeight: "100vh"
-    }}
-  >
-    <div
-      style={{
-        background: "#fff",
-        padding: "25px",
-        borderRadius: "10px",
-        boxShadow: "0 10px 25px rgba(0,0,0,0.1)"
-      }}
-    >
-      <h2 style={{ marginBottom: "20px", color: "#333" }}>
-        🔔 Notifications
-      </h2>
+    <div className="notifications-page">
+      <h2 className="notifications-title">🔔 Notifications</h2>
 
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          fontSize: "15px"
-        }}
-      >
+      <table className="notifications-table">
         <thead>
-          <tr style={{ background: "#f1f3f5", textAlign: "left" }}>
-            <th style={thStyle}>ID</th>
-            <th style={thStyle}>Order</th>
-            <th style={thStyle}>Message</th>
-            <th style={thStyle}>Status</th>
-            <th style={thStyle}>Action</th>
+          <tr>
+            <th>ID</th>
+            <th>Order</th>
+            <th>Message</th>
+            <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
 
         <tbody>
-          {list.map((n) => (
-            <tr
-              key={n.id}
-              onClick={() => markRead(n)}
-              style={{
-                cursor: "pointer",
-                backgroundColor: n.readStatus ? "#fff" : "#eef6ff",
-                transition: "0.2s"
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.background = "#f9fafb")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.background =
-                  n.readStatus ? "#fff" : "#eef6ff")
-              }
-            >
-              <td style={tdStyle}>{n.id}</td>
-              <td style={tdStyle}>{n.orderId}</td>
-              <td style={tdStyle}>{n.message}</td>
-              <td style={tdStyle}>
-                <span
-                  style={{
-                    padding: "4px 10px",
-                    borderRadius: "20px",
-                    fontSize: "13px",
-                    fontWeight: "600",
-                    color: n.readStatus ? "#155724" : "#0c5460",
-                    background: n.readStatus ? "#d4edda" : "#d1ecf1"
-                  }}
-                >
-                  {n.readStatus ? "Read" : "Unread"}
-                </span>
+          {list.length === 0 && (
+            <tr>
+              <td colSpan="5" style={{ textAlign: "center", padding: "20px" }}>
+                No notifications found
               </td>
-              <td style={tdStyle}>
+            </tr>
+          )}
+
+          {list.map(n => (
+            <tr key={n.id}>
+              <td>{n.id}</td>
+              <td>{n.orderId}</td>
+              <td>{n.message}</td>
+
+              <td className={n.readStatus ? "badge-read" : "badge-unread"}>
+                {n.readStatus ? "Read" : "Unread"}
+              </td>
+
+              <td>
+                {!n.readStatus && (
+                  <button
+                    className="btn-read"
+                    onClick={() => markRead(n.id)}
+                  >
+                    Mark Read
+                  </button>
+                )}
+
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation(); // 🔴 unchanged
-                    deleteNotification(n.id);
-                  }}
-                  style={{
-                    padding: "6px 12px",
-                    borderRadius: "5px",
-                    border: "none",
-                    background: "#dc3545",
-                    color: "#fff",
-                    cursor: "pointer"
-                  }}
+                  className="btn-delete"
+                  onClick={() => remove(n.id)}
                 >
                   Delete
                 </button>
@@ -146,9 +89,7 @@ function NotificationsPage() {
         </tbody>
       </table>
     </div>
-  </div>
-);
-
+  );
 }
 
 export default NotificationsPage;
