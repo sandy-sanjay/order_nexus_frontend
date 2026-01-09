@@ -2,7 +2,7 @@ import axios from "axios";
 import withJwt  from "./withJwt";
 
 const axiosPayment = axios.create({
-  baseURL: "http://localhost:8084",
+  baseURL: "https://payment-service-xxxx.onrender.com",
 });
 
 withJwt(axiosPayment);

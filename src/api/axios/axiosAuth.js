@@ -2,7 +2,7 @@ import axios from "axios";
 import { withJwt } from "./withJwt";
 
 const axiosAuth = axios.create({
-  baseURL: "http://localhost:8081",
+  baseURL: "https://auth-service-ejig.onrender.com",
 });
 
 withJwt(axiosAuth);

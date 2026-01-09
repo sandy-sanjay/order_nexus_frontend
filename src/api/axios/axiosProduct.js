@@ -2,7 +2,7 @@ import axios from "axios";
 import withJwt  from "./withJwt";
 
 const axiosProduct = axios.create({
-  baseURL: "http://localhost:8082",
+  baseURL: "https://inventory-service-xxxx.onrender.com", 
 });
 
 withJwt(axiosProduct);

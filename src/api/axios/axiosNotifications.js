@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosNotifications = axios.create({
-  baseURL: "http://localhost:8085",
+  baseURL: "https://notification-service-xxxx.onrender.com",
 });
 
 axiosNotifications.interceptors.request.use(
