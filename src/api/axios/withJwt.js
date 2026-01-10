@@ -1,16 +1,15 @@
-const withJwt = (axiosInstance) => {
-  axiosInstance.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem("token");
+import axios from "axios";
+import axiosConfig from "./axiosConfig";
 
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+const withJwt = () => {
+  const token = localStorage.getItem("token");
 
-      return config;
+  return axios.create({
+    baseURL: axiosConfig.defaults.baseURL,
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-    (error) => Promise.reject(error)
-  );
+  });
 };
 
 export default withJwt;

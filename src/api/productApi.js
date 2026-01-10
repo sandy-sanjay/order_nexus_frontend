@@ -1,16 +1,10 @@
-import axiosProduct from "./axios/axiosProduct";
+import withJwt from "./axios/withJwt";
 
 const productApi = {
-  getAll: () => axiosProduct.get("/api/products"),
-
-  create: (data) =>
-    axiosProduct.post("/api/products", data),
-
-  updateStock: (id, qty) =>
-    axiosProduct.put(`/api/products/${id}`, { quantity: qty }),
-
-  remove: (id) =>
-    axiosProduct.delete(`/api/products/${id}`),
+  getAll: () => withJwt().get("/api/products"),
+  create: (product) => withJwt().post("/api/products", product),
+  remove: (id) => withJwt().delete(`/api/products/${id}`),
+  updateStock: (id, quantity) => withJwt().put(`/api/products/${id}/stock`, { quantity }),
 };
 
 export default productApi;

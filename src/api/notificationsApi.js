@@ -1,17 +1,10 @@
-import axiosNotifications from "./axios/axiosNotifications";
+import withJwt from "./axios/withJwt";
 
 const notificationsApi = {
-  getAll: () =>
-    axiosNotifications.get("/api/notifications"),
-
-  unreadCount: () =>
-    axiosNotifications.get("/api/notifications/unread-count"),
-
-  markRead: (id) =>
-    axiosNotifications.put(`/api/notifications/read/${id}`),
-
-  remove: (id) =>
-    axiosNotifications.delete(`/api/notifications/${id}`),
+  getAll: () => withJwt().get("/api/notifications"),
+  unreadCount: () => withJwt().get("/api/notifications/unread-count"),
+  markRead: (id) => withJwt().put(`/api/notifications/read/${id}`),
+  remove: (id) => withJwt().delete(`/api/notifications/${id}`),
 };
 
 export default notificationsApi;

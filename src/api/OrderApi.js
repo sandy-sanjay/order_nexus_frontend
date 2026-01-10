@@ -1,25 +1,12 @@
-import axiosOrder from "./axios/axiosOrder";
+import withJwt from "./axios/withJwt";
 
-const OrderApi = {
-  // create order
-  create: (data) =>
-    axiosOrder.post("/api/orders", data),
+const orderApi = {
+  getAll: () => withJwt().get("/api/orders"),
+  create: (order) => withJwt().post("/api/orders", order),
 
-  // get all orders
-  getAll: () =>
-    axiosOrder.get("/api/orders"),
-
-  // get order by id
-  getById: (id) =>
-    axiosOrder.get(`/api/orders/${id}`),
-
-  // ✅ REQUIRED BY DASHBOARD
-  revenue: () =>
-    axiosOrder.get("/api/orders/revenue"),
-
-  // ✅ REQUIRED BY DASHBOARD
-  topProducts: () =>
-    axiosOrder.get("/api/orders/top-products"),
+  // ✅ Dashboard APIs
+  revenue: () => withJwt().get("/api/orders/revenue"),
+  topProducts: () => withJwt().get("/api/orders/top-products"),
 };
 
-export default OrderApi;
+export default orderApi;

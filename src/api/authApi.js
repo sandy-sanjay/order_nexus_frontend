@@ -1,8 +1,8 @@
-import axios from "axios";
+import api from "./axios/axiosConfig";
 
 const authApi = {
-  login: (data) =>
-    axios.post("https://auth-service-ejig.onrender.com/api/auth/login", data),
+  // accepts { username, password }
+  login: (credentials) => api.post("/api/auth/login", credentials),
 };
 
 export default authApi;
