@@ -79,7 +79,7 @@ function Sidebar() {
         {/* ================= LOGOUT (USER ONLY) ================= */}
         {role === "USER" && (
           <li>
-            <Link to="#" onClick={handleLogout} style={{ color: "red" }}>
+            <Link to="/" onClick={handleLogout} className="logout-link">
               Logout
             </Link>
           </li>

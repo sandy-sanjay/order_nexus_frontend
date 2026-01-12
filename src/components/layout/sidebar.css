@@ -102,3 +102,13 @@
   color: #ffffff;
   border-left: 4px solid #4db8ff;
 }
+
+/* Logout Button */
+.logout-link {
+  color: #ff8787 !important; /* Soft minimal red */
+}
+
+.logout-link:hover {
+  color: #ff6b6b !important;
+  background: rgba(255, 107, 107, 0.1) !important;
+}
