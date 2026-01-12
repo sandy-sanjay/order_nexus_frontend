@@ -8,12 +8,13 @@ function Register() {
   const register = async (e) => {
     e.preventDefault();
 
-    await axios.post("http://localhost:8081/api/auth/register", {
-      username,
-      password
-    });
-
-    alert("User registered successfully");
+    try {
+      await authApi.register({ username, password });
+      alert("User registered successfully");
+    } catch (err) {
+      console.error("REGISTER FAILED", err);
+      alert("Registration failed");
+    }
   };
 
   return (
