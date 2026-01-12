@@ -1,9 +1,16 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./sidebar.css";
 import notificationApi from "../../api/notificationsApi";
 
 function Sidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/");
+  };
 
   const [unreadCount, setUnreadCount] = useState(0);
   const role = localStorage.getItem("role"); // ADMIN or USER
@@ -69,8 +76,14 @@ function Sidebar() {
           </Link>
         </li>
 
-        {/* Optional Logout */}
-        {/* <li><Link to="/logout">Logout</Link></li> */}
+        {/* ================= LOGOUT (USER ONLY) ================= */}
+        {role === "USER" && (
+          <li>
+            <Link to="#" onClick={handleLogout} style={{ color: "red" }}>
+              Logout
+            </Link>
+          </li>
+        )}
 
       </ul>
     </div>
