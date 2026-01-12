@@ -38,14 +38,14 @@ function Sidebar() {
             <li><Link to="/products">Products</Link></li>
             <li><Link to="/orders">Orders</Link></li>
             <li><Link to="/payments">Payments</Link></li>
-           
+
           </>
         )}
 
         {/* ================= USER MENU ================= */}
         {role === "USER" && (
           <>
-            <li><Link to="/products">Products</Link></li>
+            <li><Link to="/orders">Place Order</Link></li>
             <li><Link to="/my-orders">My Orders</Link></li>
             <li><Link to="/payments">Payments</Link></li>
           </>

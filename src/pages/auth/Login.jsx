@@ -28,7 +28,7 @@ function Login() {
       if (res.data.role === "ADMIN") {
         navigate("/dashboard");
       } else {
-        navigate("/products");
+        navigate("/orders");
       }
     } catch (err) {
       console.error("LOGIN FAILED", err);
