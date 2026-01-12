@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import authApi from "../../api/authApi";
 import "./Login.css";
 
@@ -60,6 +60,11 @@ function Login() {
 
           <button type="submit">Login</button>
         </form>
+        <div className="note">
+          <p>
+            Don't have an account? <Link to="/register">Sign Up</Link>
+          </p>
+        </div>
       </div>
     </div>
   );

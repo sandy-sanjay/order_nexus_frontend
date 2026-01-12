@@ -8,14 +8,16 @@ import CreateOrder from "./pages/orders/CreateOrder";
 import Payment from "./pages/payments/Payment";
 import Notifications from "./pages/Notifications";
 import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* PUBLIC ROUTE */}
+        {/* PUBLIC ROUTES */}
         <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* 🔐 PROTECTED DASHBOARD ROUTES */}
         <Route
