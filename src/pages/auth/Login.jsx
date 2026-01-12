@@ -24,8 +24,12 @@ function Login() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
 
-      // ✅ REDIRECT
-      navigate("/dashboard");
+      // ✅ REDIRECT BASED ON ROLE
+      if (res.data.role === "ADMIN") {
+        navigate("/dashboard");
+      } else {
+        navigate("/products");
+      }
     } catch (err) {
       console.error("LOGIN FAILED", err);
       alert("Invalid credentials");

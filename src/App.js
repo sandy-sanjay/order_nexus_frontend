@@ -29,7 +29,9 @@ function App() {
         >
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/products" element={<Products />} />
           <Route path="/orders" element={<CreateOrder />} />
+          <Route path="/my-orders" element={<div style={{ padding: '2rem' }}><h2>My Orders</h2><p>Order history coming soon...</p></div>} />
           <Route path="/payments" element={<Payment />} />
           <Route path="/notifications" element={<Notifications />} />
         </Route>
