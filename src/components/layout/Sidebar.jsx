@@ -46,7 +46,6 @@ function Sidebar() {
         {role === "USER" && (
           <>
             <li><Link to="/orders">Place Order</Link></li>
-            <li><Link to="/my-orders">My Orders</Link></li>
             <li><Link to="/payments">Payments</Link></li>
           </>
         )}
