@@ -4,12 +4,15 @@ import axiosConfig from "./axiosConfig";
 const withJwt = () => {
   const token = localStorage.getItem("token");
 
-  return axios.create({
+  const instance = axios.create({
     baseURL: axiosConfig.defaults.baseURL,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
   });
+
+  if (token) {
+    instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  }
+
+  return instance;
 };
 
 export default withJwt;
