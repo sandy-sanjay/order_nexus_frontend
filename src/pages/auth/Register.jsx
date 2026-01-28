@@ -6,18 +6,27 @@ import "./Login.css"; // Reusing login styles
 function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
 
   const register = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setIsError(false);
 
     try {
       await authApi.register({ username: email, password });
-      alert("User registered successfully");
-      navigate("/"); // Redirect to login
+      setMessage("User registered successfully! Redirecting...");
+      setIsError(false);
+      setTimeout(() => navigate("/"), 2000); // Redirect to login after 2 seconds
     } catch (err) {
       console.error("REGISTER FAILED", err);
-      alert("Registration failed");
+      const errorMsg = typeof err.response?.data === 'string'
+        ? err.response.data
+        : "Registration failed. Please try again.";
+      setMessage(errorMsg);
+      setIsError(true);
     }
   };
 
@@ -25,6 +34,11 @@ function Register() {
     <div className="login-container">
       <div className="login-card">
         <h2>Sign Up</h2>
+        {message && (
+          <div className={`message-box ${isError ? "error" : "success"}`}>
+            {message}
+          </div>
+        )}
         <form onSubmit={register}>
           <input
             type="email"

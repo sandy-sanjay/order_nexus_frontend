@@ -87,3 +87,23 @@
   justify-content: center;
   margin-top: 10px;
 }
+
+.message-box {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.message-box.error {
+  background: #ffe6e6;
+  color: #cc0000;
+  border: 1px solid #ffcccc;
+}
+
+.message-box.success {
+  background: #e6ffed;
+  color: #28a745;
+  border: 1px solid #c6f6d5;
+}
