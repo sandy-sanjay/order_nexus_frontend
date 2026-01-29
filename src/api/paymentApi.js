@@ -1,10 +1,10 @@
-import withJwt from "./axios/withJwt";
+import api from "./axios/axiosConfig";
 
 const paymentApi = {
   // Backwards-compatible alias used by UI
-  pay: (payment) => withJwt().post("/api/payments", payment),
-  makePayment: (payment) => withJwt().post("/api/payments", payment),
-  getPayments: () => withJwt().get("/api/payments"),
+  pay: (payment) => api.post("/api/payments", payment),
+  makePayment: (payment) => api.post("/api/payments", payment),
+  getPayments: () => api.get("/api/payments"),
 };
 
 export default paymentApi;

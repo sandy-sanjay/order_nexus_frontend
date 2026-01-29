@@ -1,12 +1,12 @@
-import withJwt from "./axios/withJwt";
+import api from "./axios/axiosConfig";
 
 const orderApi = {
-  getAll: () => withJwt().get("/api/orders"),
-  create: (order) => withJwt().post("/api/orders", order),
+  getAll: () => api.get("/api/orders"),
+  create: (order) => api.post("/api/orders", order),
 
   // ✅ Dashboard APIs
-  revenue: () => withJwt().get("/api/orders/revenue"),
-  topProducts: () => withJwt().get("/api/orders/top-products"),
+  revenue: () => api.get("/api/orders/revenue"),
+  topProducts: () => api.get("/api/orders/top-products"),
 };
 
 export default orderApi;
